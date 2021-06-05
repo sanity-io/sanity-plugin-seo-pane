@@ -1,6 +1,7 @@
 /test
 /coverage
 .editorconfig
+.babelrc
 .eslintrc
 .gitignore
 .github
