@@ -49,7 +49,7 @@ res.setHeader('Access-Control-Allow-Origin', corsOrigin)
 res.setHeader('Access-Control-Allow-Credentials', true)
 ```
 
-### Returning a string
+### Returning an object
 
 ...but that's not all. The plugin expects your preview route to actually return an object with two keys:
 
@@ -60,10 +60,12 @@ res.setHeader('Access-Control-Allow-Credentials', true)
 }
 ```
 
-So, in my personal usage my `resolveProductionUrl()` function will append `fetch=true` to the route when used for the SEO plugin. And this will prompt the `/api` route to actually perform its own fetch for the markup of the page – not redirect to it – and return the expected object shape.
+The Component will append a `fetch=true` parameter to the URL. You can use this to make the `/api` route to actually perform its own fetch for the markup of the page – not redirect to it – and return the expected object shape.
 
 ```js
 // ./pages/api/preview.js
+
+// ... CORS enabled stuff, res.setPreviewData, etc
 
 // Fetch the preview-page's HTML and return in an object
 if (req?.query?.fetch === 'true') {
