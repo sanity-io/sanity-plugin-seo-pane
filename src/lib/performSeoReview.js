@@ -16,8 +16,8 @@ export default async function performSeoReview(url, keyword, synonyms) {
   // The addition of a &fetch=true searchParam will make the API route perform a fetch request
   // Returning an object which contains the absoluteUrl of final page and its HTML as a string
   return fetch(previewUrl.toString(), {credentials: `include`})
-    .then(async (res) => res.json())
-    .then(({resUrl, html}) => {
+    .then((res) => res.text())
+    .then((html) => {
       const parser = new DOMParser()
       const htmlDocument = parser.parseFromString(html, `text/html`)
 
@@ -31,22 +31,25 @@ export default async function performSeoReview(url, keyword, synonyms) {
         .querySelector(`meta[name=description]`)
         ?.getAttribute(`content`)
 
-      const resPreviewUrl = new URL(resUrl)
+      const canonicalUrl = htmlDocument.querySelector('[rel="canonical"]')?.getAttribute('href')
+      const resPreviewUrl = canonicalUrl ? new URL(canonicalUrl) : {}
 
       // This key is for the absolute URL
-      const permalink = resPreviewUrl.origin + resPreviewUrl.pathname
+      const permalink = resPreviewUrl?.origin + resPreviewUrl?.pathname
 
+      // Confusingly, this key is just the pathname
+      const url = resPreviewUrl?.pathname
       
       const options = {
         keyword,
         synonyms,
-        // Confusingly, this key is just the pathname
-        url: resPreviewUrl?.pathname,
-        permalink,
+        url: url ?? ``,
+        permalink: permalink ?? ``,
         title,
         // TODO: Could not find where/how Yoast measures this
         titleWidth: 600, 
         description,
+        // TODO: Not yet configurable
         // locale: langCulture.replace('-', '_'),
       }
 

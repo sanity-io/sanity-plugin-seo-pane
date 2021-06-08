@@ -1,5 +1,5 @@
 import React from 'react'
-import {Card, Heading, studioTheme, ThemeProvider} from '@sanity/ui'
+import {studioTheme, ThemeProvider} from '@sanity/ui'
 import PropTypes from 'prop-types'
 import delve from 'dlv'
 import {QueryClientProvider, QueryClient} from 'react-query'

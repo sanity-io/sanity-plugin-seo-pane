@@ -2,7 +2,11 @@
 
 Run Yoast's SEO review tools using Sanity data, inside a List View Pane. When setup correctly, it will fetch your rendered front-end, as your Sanity data changes, to give instant SEO feedback on your document.
 
-**Important**: This plugin is very early, overly complex and it some ways convoluted. In future, it should become more simplified.
+🚨 **Important** 🚨
+
+This plugin is early, complex and it some ways convoluted. Over time it should become more simplified.
+
+![SEO Pane](https://user-images.githubusercontent.com/9684022/121206036-0a527300-c870-11eb-8192-be5e523236ab.gif)
 
 ## Installation
 
@@ -30,9 +34,9 @@ S.view
 
 The `.options()` configuration works as follows:
 
-- `keywords` (string, required) A dot-notated string from the document object to a field containing the keywords/keyphrase
-- `synonyms` (string, optional) As above
-- `url` (function, required) A function that takes in the current document, and should return a string with a URL to a preview-enabled front-end.
+- `keywords` (string, required) A [dot-notated string](https://www.npmjs.com/package/dlv) from the document object to a field containing the keywords/keyphrase.
+- `synonyms` (string, optional) As above.
+- `url` (function, required) A function that takes in the current document, and should return a string with a URL to a preview-enabled front-end. You likely have a function like this already for Live Preview.
 
 ### Fetching the front-end
 
@@ -49,18 +53,17 @@ res.setHeader('Access-Control-Allow-Origin', corsOrigin)
 res.setHeader('Access-Control-Allow-Credentials', true)
 ```
 
-### Returning an object
+### Defining the content area
 
-...but that's not all. The plugin expects your preview route to actually return an object with two keys:
+By default, the plugin will examine all content it finds inside a tag with this attribute: `data-content="main"`.
 
-```js
-{
-  resUrl: // string – the actual, final URL of the page (not the preview route you used to fetch it)
-  html: // string – the HTML markup of the page, for analysis
-}
-```
+If this cannot be found it will fallback to content `<main>inside your main tag</main>`.
+
+### Returning the page HTML as a string
 
 The Component will append a `fetch=true` parameter to the URL. You can use this to make the `/api` route to actually perform its own fetch for the markup of the page – not redirect to it – and return the expected object shape.
+
+Making your Preview route actually `fetch` the markup and just return a string will avoid problems with having to pass cookies along from Sanity Studio, to the preview route, to the front end. You will note in the below example though we are deliberately copying the Cookies from the incoming request to the `/api` route and passing them along to the front-end.
 
 ```js
 // ./pages/api/preview.js
@@ -70,33 +73,32 @@ The Component will append a `fetch=true` parameter to the URL. You can use this 
 // Fetch the preview-page's HTML and return in an object
 if (req?.query?.fetch === 'true') {
   const proto = process.env.NODE_ENV === 'development' ? `http://` : `https://`
-  const {host} = req.headers
+  const host = req.headers.host
+  const pathname = req?.query?.slug ?? `/`
   const absoluteUrl = new URL(`${proto}${host}${pathname}`).toString()
 
   const previewHtml = await fetch(absoluteUrl, {
     credentials: `include`,
-    headers: {
-      Cookie: req.headers.cookie,
-    },
+    headers: {Cookie: req.headers.cookie},
   })
-    .then(async (previewRes) => ({
-      resUrl: absoluteUrl,
-      html: await previewRes.text(),
-    }))
+    .then((previewRes) => previewRes.text())
     .catch((err) => console.error(err))
 
-  // We send JSON instead of Text so that the res URL can be passed back
-  return res.json(previewHtml)
+  return res.send(previewHtml)
 }
 ```
 
 ### A note on server-side rendering of draft content
 
-As a final, Next.js specific note. Because this is going to fetch server-side, you'll need to make sure your `getStaticProps()` is actually going to return draft content.
+As a final, Next.js specific note. Because this is going to fetch server-side, you'll need to make sure your `getStaticProps()` is actually going to return draft content server-side.
 
-It's easy to accidentally configure Next.js with Sanity previews to query for only published data, and then switch over to draft content client-side.
+(Client-side, Sanity's usePreviewSubscription hook will take Published content and return a Draft version, but server-side we need to do it ourselves)
 
-To solve this with the server side query, I'll make sure we query for as many documents as match the slug (as in, draft AND published) then use this function to just filter down to the one I want:
+It's easy to accidentally configure Next.js and Sanity to query for only published data, and then switch over to draft content client-side.
+
+For example, your GROQ query might look like `*[slug.current == $slug][0]` which will only return one document, and not necessarily the draft.
+
+To solve this with the server side query, I'll make sure we query for **all documents** that match the slug (as in, draft _and_ published) then use this function to just filter down to the one I want:
 
 ```js
 filterDataToSingleItem(data, preview) {
