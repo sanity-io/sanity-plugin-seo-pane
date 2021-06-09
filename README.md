@@ -38,9 +38,17 @@ The `.options()` configuration works as follows:
 - `synonyms` (string, optional) As above.
 - `url` (function, required) A function that takes in the current document, and should return a string with a URL to a preview-enabled front-end. You likely have a function like this already for Live Preview.
 
+### Defining the content area
+
+By default, the plugin will examine all content it finds inside a tag with this attribute: `data-content="main"`.
+
+If this cannot be found it will fallback to content `<main>inside your main tag</main>`.
+
 ### Fetching the front-end
 
 Because the plugin uses Fetch, you're likely to run into CORS issues retrieving the front end from the Studio. Therefore, you may need to do some setup work on your preview URL. If you're using Next.js, adding this to the top of of your preview `/api` route will _make fetch happen_.
+
+Some snippets are below, [but here is a full Sanity Preview Next.js API Route for reference](https://gist.github.com/SimeonGriggs/6649dc7f4b0fec974c05d29cae969cbc)
 
 ```js
 // ./pages/api/preview.js
@@ -52,12 +60,6 @@ const corsOrigin =
 res.setHeader('Access-Control-Allow-Origin', corsOrigin)
 res.setHeader('Access-Control-Allow-Credentials', true)
 ```
-
-### Defining the content area
-
-By default, the plugin will examine all content it finds inside a tag with this attribute: `data-content="main"`.
-
-If this cannot be found it will fallback to content `<main>inside your main tag</main>`.
 
 ### Returning the page HTML as a string
 
