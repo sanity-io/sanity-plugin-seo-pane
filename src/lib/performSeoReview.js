@@ -115,10 +115,10 @@ export default async function performSeoReview(url, keyword, synonyms) {
         const newArr = Object.keys(assessmentResults[parentCur]).reduce((childAcc, childKey) => {
           const newChild = assessmentResults[parentCur][childKey]
 
-          return [...childAcc, newChild]
+          return newChild ? [...childAcc, newChild] : childAcc
         }, [])
 
-        return [...parentAcc, ...newArr]
+        return newArr ? [...parentAcc, ...newArr] : parentAcc
       }, [])
 
       // mapResults function is a lightly edited function copied from the Yoast WordPress plugin
