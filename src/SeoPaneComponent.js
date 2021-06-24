@@ -2,21 +2,44 @@ import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import {Text, Stack, Box, Card, Label, Flex, TabList, Tab, TabPanel, Spinner} from '@sanity/ui'
 import {useQuery} from 'react-query'
+import delve from 'dlv'
 import SerpPreview from 'react-serp-preview'
 
+import asyncCall from './lib/asyncCall'
 import performSeoReview from './lib/performSeoReview'
 import {renderRatingToColor} from './lib/renderRatingToColor'
 import {resultsLabels} from './lib/resultsLabels'
 
 import Feedback from './Feedback'
 
-export default function SeoPaneComponent({revision, url, keywords, synonyms}) {
+export default function SeoPaneComponent({document, options}) {
   const [tab, setTab] = useState('')
 
   // The `revision` key updates when the document does, refreshing the query
   const {data, isLoading, error} = useQuery(
-    [`seoReview`, revision],
-    async () => performSeoReview(url, keywords, synonyms),
+    [`seoReview`, document._rev],
+    async () => {
+      if (!document._id) throw new Error('Document is not published')
+      else if (!options.keywords) throw new Error('Keywords is not defined')
+      else if (!options.url) throw new Error('Url is not defined')
+
+      let [keywords, synonyms, url] = await Promise.all([
+        asyncCall(options.keywords, document),
+        asyncCall(options.synonyms, document),
+        asyncCall(options.url, document),
+      ])
+
+      // Visits document path when strings because the asyncCall will have same value as options
+      if (keywords && keywords === options.keywords) keywords = delve(keywords, document)
+      if (synonyms && synonyms === options.synonyms) synonyms = delve(synonyms, document)
+
+      // Tack on keywords and synonyms to seo review response since we use them.
+      return {
+        ...(await performSeoReview(url, keywords, synonyms)),
+        keywords,
+        synonyms
+      }
+    },
     {keepPreviousData: true}
   )
 
@@ -39,7 +62,7 @@ export default function SeoPaneComponent({revision, url, keywords, synonyms}) {
     return <Feedback isError>Error: {JSON.stringify(data?.error)}</Feedback>
   }
 
-  const {permalink, meta, resultsMapped} = data
+  const {keywords, meta, permalink, resultsMapped, synonyms} = data
 
   return (
     <Box padding={4}>
@@ -120,8 +143,15 @@ export default function SeoPaneComponent({revision, url, keywords, synonyms}) {
 }
 
 SeoPaneComponent.propTypes = {
-  revision: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired,
-  keywords: PropTypes.string.isRequired,
-  synonyms: PropTypes.string.isRequired,
+  document: PropTypes.shape({
+    displayed: PropTypes.shape({
+      _id: PropTypes.string,
+      _rev: PropTypes.string,
+    }),
+  }).isRequired,
+  options: PropTypes.shape({
+    keywords: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
+    synonyms: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+    url: PropTypes.func.isRequired,
+  }).isRequired,
 }
