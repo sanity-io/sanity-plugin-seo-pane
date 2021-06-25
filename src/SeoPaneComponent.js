@@ -20,8 +20,8 @@ export default function SeoPaneComponent({document, options}) {
     [`seoReview`, document._rev],
     async () => {
       if (!document._id) throw new Error('Document is not published')
-      else if (!options.keywords) throw new Error('Keywords is not defined')
-      else if (!options.url) throw new Error('Url is not defined')
+      else if (!options.keywords) badOption('keywords')
+      else if (!options.url) badOption('url')
 
       let [keywords, synonyms, url] = await Promise.all([
         asyncCall(options.keywords, document),
@@ -52,18 +52,17 @@ export default function SeoPaneComponent({document, options}) {
     )
   }
 
-  // There's an error with the request itself
-  if (error) {
-    return <Feedback isError>Request Error: {JSON.stringify(error)}</Feedback>
-  }
+  // Bail out on error. Unfortunately can't JSON.stringify(Error) to get the stack/message.
+  let errorMessage;
+  if (error instanceof Error) errorMessage = error.stack ? <pre>{error.stack}</pre> : error.message;
+  else if (!data) errorMessage = 'Empty response';
+  else if (data.error) errorMessage = <pre>{JSON.stringify(data.error)}</pre>;
 
-  // We deliberately returned an error
-  if (!data || data?.error) {
-    return <Feedback isError>Error: {JSON.stringify(data?.error)}</Feedback>
+  if (errorMessage) {
+    return <Feedback isError>Error: {errorMessage}</Feedback>;
   }
 
   const {keywords, meta, permalink, resultsMapped, synonyms} = data
-
   return (
     <Box padding={4}>
       <Flex direction="column">
@@ -154,4 +153,8 @@ SeoPaneComponent.propTypes = {
     synonyms: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     url: PropTypes.func.isRequired,
   }).isRequired,
+}
+
+function badOption (key) {
+  throw new Error(`seo-pane options: ${key} is invalid or missing`)
 }
