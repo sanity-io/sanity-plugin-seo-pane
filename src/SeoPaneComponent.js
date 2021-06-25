@@ -10,6 +10,7 @@ import performSeoReview from './lib/performSeoReview'
 import {renderRatingToColor} from './lib/renderRatingToColor'
 import {resultsLabels} from './lib/resultsLabels'
 
+import ErrorStack from './ErrorStack.js'
 import Feedback from './Feedback'
 
 export default function SeoPaneComponent({document, options}) {
@@ -53,13 +54,15 @@ export default function SeoPaneComponent({document, options}) {
   }
 
   // Bail out on error. Unfortunately can't JSON.stringify(Error) to get the stack/message.
-  let errorMessage;
-  if (error instanceof Error) errorMessage = error.stack ? <pre>{error.stack}</pre> : error.message;
-  else if (!data) errorMessage = 'Empty response';
-  else if (data.error) errorMessage = <pre>{JSON.stringify(data.error)}</pre>;
+  let errorMessage
+  if (error instanceof Error) {
+    errorMessage = <>{error.message} <ErrorStack stack={error.stack} /></>
+  }
+  else if (!data) errorMessage = 'Empty response'
+  else if (data.error) errorMessage = <pre>{JSON.stringify(data.error)}</pre>
 
   if (errorMessage) {
-    return <Feedback isError>Error: {errorMessage}</Feedback>;
+    return <Feedback isError>Error: {errorMessage}</Feedback>
   }
 
   const {keywords, meta, permalink, resultsMapped, synonyms} = data
