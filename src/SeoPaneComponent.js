@@ -31,8 +31,8 @@ export default function SeoPaneComponent({document, options}) {
       ])
 
       // Visits document path when strings because the asyncCall will have same value as options
-      if (keywords && keywords === options.keywords) keywords = delve(keywords, document)
-      if (synonyms && synonyms === options.synonyms) synonyms = delve(synonyms, document)
+      if (keywords && keywords === options.keywords) keywords = delve(document, keywords)
+      if (synonyms && synonyms === options.synonyms) synonyms = delve(document, synonyms)
 
       // Tack on keywords and synonyms to seo review response since we use them.
       return {
