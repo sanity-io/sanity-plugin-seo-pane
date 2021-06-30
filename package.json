@@ -10,13 +10,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/SimeonGriggs/sanity-plugin-seo-pane.git"
+    "url": "git+ssh://git@github.com/sanity-io/sanity-plugin-seo-pane.git"
   },
   "keywords": [
     "sanity",
     "sanity-plugin"
   ],
-  "author": "Simeon Griggs <simeon@sanity.io>",
+  "author": "Sanity.io <hello@sanity.io>",
   "license": "MIT",
   "dependencies": {
     "@sanity/ui": "^0.34.1",
@@ -39,9 +39,9 @@
     "react": "^17.0.0"
   },
   "bugs": {
-    "url": "https://github.com/SimeonGriggs/sanity-plugin-seo-pane/issues"
+    "url": "https://github.com/sanity-io/sanity-plugin-seo-pane/issues"
   },
-  "homepage": "https://github.com/SimeonGriggs/sanity-plugin-seo-pane#readme",
+  "homepage": "https://github.com/sanity-io/sanity-plugin-seo-pane#readme",
   "prettier": {
     "semi": false,
     "printWidth": 100,
