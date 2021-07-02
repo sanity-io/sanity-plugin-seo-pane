@@ -40,7 +40,7 @@ S.view
 
 The `.options()` configuration works as follows:
 
-- `keywords` (`string|function(Document):(string|Promise<string>)`, required) Either a [dot-notated string](https://www.npmjs.com/package/dlv) from the document object to a field containing the keywords/keyphrase, or a function that resolves to the keywords/keyphrase in the document object.
+- `keywords` (`string|function(Document):(string|Promise<string>)`, optional) Either a [dot-notated string](https://www.npmjs.com/package/dlv) from the document object to a field containing the keywords/keyphrase, or a function that resolves to the keywords/keyphrase in the document object.
 - `synonyms` (`string|function(Document):(string|Promise<string>)`, optional) As above.
 - `url` (`function(Document):(string|Promise<string>)`, required) A function that takes in the current document, and resolves to a string with a URL to a preview-enabled front-end. You likely have a function like this already for Live Preview.
 

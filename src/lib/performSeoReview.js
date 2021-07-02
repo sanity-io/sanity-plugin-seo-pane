@@ -5,8 +5,6 @@ import config from 'yoastseo/src/config/content/default.js'
 import mapResults from './mapResults'
 
 export default async function performSeoReview(url, keyword, synonyms) {
-  if (!keyword) return {error: `No keyword defined`}
-
   const previewUrl = new URL(url)
 
   // Tell the API route to just fetch and return the HTML string
@@ -41,8 +39,8 @@ export default async function performSeoReview(url, keyword, synonyms) {
       const url = resPreviewUrl?.pathname
       
       const options = {
-        keyword,
-        synonyms,
+        keyword: keyword ?? ``,
+        synonyms: synonyms ?? ``,
         url: url ?? ``,
         permalink: permalink ?? ``,
         title,

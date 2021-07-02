@@ -21,7 +21,6 @@ export default function SeoPaneComponent({document, options}) {
     [`seoReview`, document._rev],
     async () => {
       if (!document._id) throw new Error('Document is not published')
-      else if (!options.keywords) badOption('keywords')
       else if (!options.url) badOption('url')
 
       let [keywords, synonyms, url] = await Promise.all([
