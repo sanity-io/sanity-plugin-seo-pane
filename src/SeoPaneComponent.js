@@ -2,8 +2,7 @@ import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import {Text, Stack, Box, Card, Label, Flex, TabList, Tab, TabPanel, Spinner} from '@sanity/ui'
 import {useQuery} from 'react-query'
-import delve from 'dlv'
-import SerpPreview from 'react-serp-preview'
+import get from 'lodash/get'
 
 import asyncCall from './lib/asyncCall'
 import performSeoReview from './lib/performSeoReview'
@@ -11,27 +10,28 @@ import {renderRatingToColor} from './lib/renderRatingToColor'
 import {resultsLabels} from './lib/resultsLabels'
 
 import ErrorStack from './ErrorStack.js'
+import SerpPreview from './SerpPreview.js'
 import Feedback from './Feedback'
 
-export default function SeoPaneComponent({document, options}) {
+export default function SeoPaneComponent({document: sanityDocument, options}) {
   const [tab, setTab] = useState('')
 
   // The `revision` key updates when the document does, refreshing the query
   const {data, isLoading, error} = useQuery(
-    [`seoReview`, document._rev],
+    [`seoReview`, sanityDocument._rev],
     async () => {
-      if (!document._id) throw new Error('Document is not published')
+      if (!sanityDocument._id) throw new Error('Document is not published')
       else if (!options.url) badOption('url')
 
       let [keywords, synonyms, url] = await Promise.all([
-        asyncCall(options.keywords, document),
-        asyncCall(options.synonyms, document),
-        asyncCall(options.url, document),
+        asyncCall(options.keywords, sanityDocument),
+        asyncCall(options.synonyms, sanityDocument),
+        asyncCall(options.url, sanityDocument),
       ])
 
       // Visits document path when strings because the asyncCall will have same value as options
-      if (keywords && keywords === options.keywords) keywords = delve(document, keywords)
-      if (synonyms && synonyms === options.synonyms) synonyms = delve(document, synonyms)
+      if (keywords && keywords === options.keywords) keywords = get(sanityDocument, keywords)
+      if (synonyms && synonyms === options.synonyms) synonyms = get(sanityDocument, synonyms)
 
       // Tack on keywords and synonyms to seo review response since we use them.
       return {
@@ -69,7 +69,7 @@ export default function SeoPaneComponent({document, options}) {
     <Box padding={4}>
       <Flex direction="column">
         {meta?.title && (
-          <Card border padding={3}>
+          <Card border padding={4} radius={2}>
             <SerpPreview
               title={meta?.title}
               metaDescription={meta?.description ?? ``}
