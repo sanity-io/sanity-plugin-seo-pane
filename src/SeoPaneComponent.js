@@ -65,6 +65,9 @@ export default function SeoPaneComponent({document: sanityDocument, options}) {
   }
 
   const {keywords, meta, permalink, resultsMapped, synonyms} = data
+
+  console.log({permalink})
+
   return (
     <Box padding={4}>
       <Flex direction="column">

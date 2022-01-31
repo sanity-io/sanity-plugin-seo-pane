@@ -50,6 +50,14 @@ By default, the plugin will examine all content it finds inside a tag with this 
 
 If this cannot be found it will fallback to content `<main>inside your main tag</main>`.
 
+### Defining the canonical URL
+
+The Search Engine Preview will rely on [retrieving a Canonical tag](https://developers.google.com/search/docs/advanced/crawling/consolidate-duplicate-urls), like the below, make sure your frontend includes one.
+
+```html
+<link rel="canonical" href="https://example.com/dresses/green-dresses" />
+```
+
 ### Fetching the front-end
 
 Because the plugin uses Fetch, you're likely to run into CORS issues retrieving the front end from the Studio. Therefore, you may need to do some setup work on your preview URL. If you're using Next.js, adding this to the top of of your preview `/api` route will _make fetch happen_.

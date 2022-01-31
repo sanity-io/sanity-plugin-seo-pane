@@ -33,7 +33,7 @@ export default async function performSeoReview(url, keyword, synonyms) {
       const resPreviewUrl = canonicalUrl ? new URL(canonicalUrl) : {}
 
       // This key is for the absolute URL
-      const permalink = resPreviewUrl?.origin + resPreviewUrl?.pathname
+      const permalink = [resPreviewUrl?.origin, resPreviewUrl?.pathname].filter(Boolean).join(``)
 
       // Confusingly, this key is just the pathname
       const url = resPreviewUrl?.pathname
