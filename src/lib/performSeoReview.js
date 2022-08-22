@@ -13,7 +13,7 @@ export default async function performSeoReview(url, keyword, synonyms) {
   // We fetch the /api/preview route to enable us to examine draft/unpublished content
   // The addition of a &fetch=true searchParam will make the API route perform a fetch request
   // Returning an object which contains the absoluteUrl of final page and its HTML as a string
-  return fetch(previewUrl.toString(), {credentials: `include`})
+  return fetch(previewUrl.toString())
     .then((res) => res.text())
     .then((html) => {
       const parser = new DOMParser()

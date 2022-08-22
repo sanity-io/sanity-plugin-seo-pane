@@ -13,7 +13,7 @@ export default function Feedback({children, isError, padding}) {
 }
 
 Feedback.propTypes = {
-  children: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   isError: PropTypes.bool,
   padding: PropTypes.number,
 }
