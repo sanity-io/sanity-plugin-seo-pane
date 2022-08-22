@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Card, Inline, Stack, Text} from '@sanity/ui'
+import {Inline, Stack, Text} from '@sanity/ui'
+
 import Feedback from './Feedback'
 
 const MAX_CHARACTERS = 145
@@ -34,7 +35,9 @@ export default function SerpPreview({title, metaDescription, url}) {
           ))}
         </Inline>
       ) : (
-        <Feedback padding={0}>URL not found, your frontend may be missing a <code>canonical</code> tag</Feedback>
+        <Feedback padding={0}>
+          URL not found, your frontend may be missing a <code>canonical</code> tag
+        </Feedback>
       )}
       {title ? (
         <Text size={3} style={{color: '#1a0dab'}}>

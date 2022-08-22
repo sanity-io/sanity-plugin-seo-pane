@@ -7,7 +7,7 @@ import SeoPaneComponent from './SeoPaneComponent'
 
 const queryClient = new QueryClient()
 
-export default function SeoPane ({ document: { displayed }, options }) {
+export default function SeoPane({document: {displayed}, options}) {
   return (
     <ThemeProvider theme={studioTheme}>
       <QueryClientProvider client={queryClient}>

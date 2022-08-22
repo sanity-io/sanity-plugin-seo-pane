@@ -37,7 +37,7 @@ export default function SeoPaneComponent({document: sanityDocument, options}) {
       return {
         ...(await performSeoReview(url, keywords, synonyms)),
         keywords,
-        synonyms
+        synonyms,
       }
     },
     {keepPreviousData: true}
@@ -55,9 +55,12 @@ export default function SeoPaneComponent({document: sanityDocument, options}) {
   // Bail out on error. Unfortunately can't JSON.stringify(Error) to get the stack/message.
   let errorMessage
   if (error instanceof Error) {
-    errorMessage = <>{error.message} <ErrorStack stack={error.stack} /></>
-  }
-  else if (!data) errorMessage = 'Empty response'
+    errorMessage = (
+      <>
+        {error.message} <ErrorStack stack={error.stack} />
+      </>
+    )
+  } else if (!data) errorMessage = 'Empty response'
   else if (data.error) errorMessage = <pre>{JSON.stringify(data.error)}</pre>
 
   if (errorMessage) {
@@ -158,6 +161,6 @@ SeoPaneComponent.propTypes = {
   }).isRequired,
 }
 
-function badOption (key) {
+function badOption(key) {
   throw new Error(`seo-pane options: ${key} is invalid or missing`)
 }
