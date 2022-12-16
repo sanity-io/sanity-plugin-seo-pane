@@ -2,10 +2,6 @@
 
 Run Yoast's SEO review tools using Sanity data, inside a List View Pane. When setup correctly, it will fetch your rendered front-end, as your Sanity data changes, to give instant SEO feedback on your document.
 
-🚨 **Important** 🚨
-
-This plugin is early, complex and it some ways convoluted. Over time it should become more simplified.
-
 ![SEO Pane](https://user-images.githubusercontent.com/9684022/121206036-0a527300-c870-11eb-8192-be5e523236ab.gif)
 
 ## Installation
