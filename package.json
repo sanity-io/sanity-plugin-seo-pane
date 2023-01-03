@@ -32,7 +32,7 @@
     "jed": "^1.1.1",
     "prop-types": "15.8.1",
     "react-query": "^3.34.8",
-    "yoastseo": "^1.91.0"
+    "yoastseo": "^1.91.1-rc.0"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^2.0.0",
