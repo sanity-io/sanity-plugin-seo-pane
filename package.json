@@ -1,6 +1,6 @@
 {
   "name": "sanity-plugin-seo-pane",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Run Yoast's SEO review tools using Sanity data, inside a List View Pane.",
   "main": "lib/SeoPane.js",
   "scripts": {
