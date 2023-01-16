@@ -55,7 +55,6 @@
     "node-gyp": "^9.3.1",
     "prop-types": "15.8.1",
     "react-query": "^3.39.2",
-    "sanity-plugin-seo-pane": "file:.yalc/sanity-plugin-seo-pane",
     "yoastseo": "^1.91.1-rc.0"
   },
   "devDependencies": {
