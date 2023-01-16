@@ -1,12 +1,13 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import {Inline, Stack, Text} from '@sanity/ui'
+import {Inline, Stack, Text, useTheme} from '@sanity/ui'
 
 import Feedback from './Feedback'
 
 const MAX_CHARACTERS = 145
 
-function splitUrl(url) {
+function splitUrl(url: string) {
+  if (!url) return []
+
   const urlObj = new URL(url)
   const urlParts = [urlObj.origin]
 
@@ -23,7 +24,15 @@ function splitUrl(url) {
   return urlParts
 }
 
-export default function SerpPreview({title, metaDescription, url}) {
+type SERPPreviewProps = {
+  metaDescription: string
+  title: string
+  url: string
+}
+
+export default function SERPPreview({title, metaDescription, url}: SERPPreviewProps) {
+  const isDarkMode = useTheme().sanity.color.dark
+
   return (
     <Stack space={3} style={{maxWidth: 600}}>
       {url ? (
@@ -40,23 +49,17 @@ export default function SerpPreview({title, metaDescription, url}) {
         </Feedback>
       )}
       {title ? (
-        <Text size={3} style={{color: '#1a0dab'}}>
+        <Text size={3} style={{color: isDarkMode ? '#8ab4f8' : '#1a0dab'}}>
           {title}
         </Text>
       ) : null}
       {metaDescription ? (
         <Text size={1}>
           {metaDescription.length > MAX_CHARACTERS
-            ? metaDescription.slice(0, MAX_CHARACTERS) + '...'
+            ? `${metaDescription.slice(0, MAX_CHARACTERS)}...`
             : metaDescription}
         </Text>
       ) : null}
     </Stack>
   )
-}
-
-SerpPreview.propTypes = {
-  metaDescription: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  url: PropTypes.string.isRequired,
 }

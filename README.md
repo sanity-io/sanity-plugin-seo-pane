@@ -1,3 +1,13 @@
+> This is a **Sanity Studio v3** plugin.
+
+## Installation
+
+```sh
+npm install sanity-plugin-seo-pane
+```
+
+## Usage
+
 # sanity-plugin-seo-pane
 
 Run Yoast's SEO review tools using Sanity data, inside a List View Pane. When setup correctly, it will fetch your rendered front-end, as your Sanity data changes, to give instant SEO feedback on your document.
@@ -14,12 +24,12 @@ This plugin requires a very specific setup in order to get the full benefit. It 
 
 ```js
 // ./src/deskStructure.js
-import SeoPane from 'sanity-plugin-seo-pane'
+import { SEOPane } from 'sanity-plugin-seo-pane'
 
 // ...all other list items
 
 S.view
-  .component(SeoPane)
+  .component(SEOPane)
   .options({
     // Retrieve the keywords and synonyms at the given dot-notated strings
     keywords: `seo.keywords`,
@@ -44,11 +54,11 @@ The `.options()` configuration works as follows:
 
 By default, the plugin will examine all content it finds inside a tag with this attribute: `data-content="main"`.
 
-If this cannot be found it will fallback to content `<main>inside your main tag</main>`.
+If this cannot be found it will fall back to content `<main>inside your main tag</main>`.
 
 ### Defining the canonical URL
 
-The Search Engine Preview will rely on [retrieving a Canonical tag](https://developers.google.com/search/docs/advanced/crawling/consolidate-duplicate-urls), like the below, make sure your frontend includes one.
+The Search Engine Preview will rely on [retrieving a Canonical tag](https://developers.google.com/search/docs/advanced/crawling/consolidate-duplicate-urls), like the one below, make sure your front end includes one.
 
 ```html
 <link rel="canonical" href="https://example.com/dresses/green-dresses" />
@@ -56,7 +66,7 @@ The Search Engine Preview will rely on [retrieving a Canonical tag](https://deve
 
 ### Fetching the front-end
 
-Because the plugin uses Fetch, you're likely to run into CORS issues retrieving the front end from the Studio. Therefore, you may need to do some setup work on your preview URL. If you're using Next.js, adding this to the top of of your preview `/api` route will _make fetch happen_.
+Because the plugin uses Fetch, you're potentially going to run into CORS issues retrieving the front end from the Studio on another URL. Therefore, you may need to do some setup work on your preview URL. If you're using Next.js, adding this to the top of your preview `/api` route will _make fetch happen_.
 
 Some snippets are below, [but here is a full Sanity Preview Next.js API Route for reference](https://gist.github.com/SimeonGriggs/6649dc7f4b0fec974c05d29cae969cbc)
 
@@ -102,7 +112,7 @@ if (req?.query?.fetch === 'true') {
 
 ### A note on server-side rendering of draft content
 
-As a final, Next.js specific note. Because this is going to fetch server-side, you'll need to make sure your `getStaticProps()` is actually going to return draft content server-side.
+As a final, Next.js specific note. Because this is going to fetch server-side, you'll need to make sure your `getStaticProps()` is  going to return draft content server-side.
 
 (Client-side, Sanity's usePreviewSubscription hook will take Published content and return a Draft version, but server-side we need to do it ourselves)
 
@@ -110,7 +120,7 @@ It's easy to accidentally configure Next.js and Sanity to query for only publish
 
 For example, your GROQ query might look like `*[slug.current == $slug][0]` which will only return one document, and not necessarily the draft.
 
-To solve this with the server side query, I'll make sure we query for **all documents** that match the slug (as in, draft _and_ published) then use this function to just filter down to the one I want:
+To solve this with the server-side query, I'll make sure we query for **all documents** that match the slug (as in, draft _and_ published) then use this function to just filter down to the one I want:
 
 ```js
 filterDataToSingleItem(data, preview) {
@@ -128,5 +138,20 @@ It's that easy!
 
 ## License
 
-MIT © Simeon Griggs
-See LICENSE
+[MIT](LICENSE) © Sanity.io
+
+
+## Develop & test
+
+This plugin uses [@sanity/plugin-kit](https://github.com/sanity-io/plugin-kit)
+with default configuration for build & watch scripts.
+
+See [Testing a plugin in Sanity Studio](https://github.com/sanity-io/plugin-kit#testing-a-plugin-in-sanity-studio)
+on how to run this plugin with hotreload in the studio.
+
+### Release new version
+
+Run ["CI & Release" workflow](https://github.com/sanity-io/sanity-plugin-seo-pane/actions/workflows/main.yml).
+Make sure to select the main branch and check "Release new version".
+
+Semantic release will only release on configured branches, so it is safe to run release on any branch.

@@ -1,57 +1,98 @@
 {
   "name": "sanity-plugin-seo-pane",
-  "version": "1.4.1",
+  "version": "2.0.0",
   "description": "Run Yoast's SEO review tools using Sanity data, inside a List View Pane.",
-  "main": "lib/SeoPane.js",
-  "scripts": {
-    "build": "sanipack build",
-    "watch": "sanipack build --watch",
-    "prepublishOnly": "pinst --disable && sanipack build && sanipack verify",
-    "postinstall": "husky install",
-    "postpublish": "pinst --enable",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:fix"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/sanity-io/sanity-plugin-seo-pane.git"
-  },
   "keywords": [
     "sanity",
     "sanity-plugin"
   ],
-  "author": "Sanity.io <hello@sanity.io>",
-  "license": "MIT",
-  "dependencies": {
-    "@sanity/ui": "^0.37.2",
-    "jed": "^1.1.1",
-    "prop-types": "15.8.1",
-    "react-query": "^3.34.8",
-    "yoastseo": "^1.91.1-rc.0"
-  },
-  "devDependencies": {
-    "@sanity/eslint-config-studio": "^2.0.0",
-    "eslint": "8.19.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-config-sanity": "6.0.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "^7.30.1",
-    "husky": "^8.0.1",
-    "pinst": "^3.0.0",
-    "prettier": "^2.7.1",
-    "sanipack": "^2.1.0"
-  },
-  "peerDependencies": {
-    "lodash": "^4.17.21",
-    "react": "^16.0.0 || ^17.0.0 || ^18.0.0"
-  },
+  "homepage": "https://github.com/sanity-io/sanity-plugin-seo-pane#readme",
   "bugs": {
     "url": "https://github.com/sanity-io/sanity-plugin-seo-pane/issues"
   },
-  "homepage": "https://github.com/sanity-io/sanity-plugin-seo-pane#readme"
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sanity-io/sanity-plugin-seo-pane.git"
+  },
+  "license": "MIT",
+  "author": "Sanity.io <hello@sanity.io>",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "source": "./src/index.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.esm.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.esm.js",
+  "source": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "sanity.json",
+    "src",
+    "v2-incompatible.js"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean && plugin-kit verify-package --silent",
+    "build": "run-s clean && plugin-kit verify-package --silent && pkg-utils build --strict && pkg-utils --strict",
+    "watch": "pkg-utils watch --strict",
+    "prepublishOnly": "run-s build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "clean": "rimraf dist",
+    "link-watch": "plugin-kit link-watch",
+    "format": "prettier --write --cache --ignore-unknown ."
+  },
+  "dependencies": {
+    "@sanity/incompatible-plugin": "^1.0.4",
+    "@sanity/ui": "^1.0.13",
+    "jed": "^1.1.1",
+    "lodash-es": "^4.17.21",
+    "node-gyp": "^9.3.1",
+    "prop-types": "15.8.1",
+    "react-query": "^3.39.2",
+    "sanity-plugin-seo-pane": "file:.yalc/sanity-plugin-seo-pane",
+    "yoastseo": "^1.91.1-rc.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.2",
+    "@commitlint/config-conventional": "^17.4.2",
+    "@sanity/eslint-config-studio": "^2.0.0",
+    "@sanity/pkg-utils": "^2.2.1",
+    "@sanity/plugin-kit": "^3.1.2",
+    "@sanity/semantic-release-preset": "^3.0.2",
+    "@types/lodash-es": "^4.17.6",
+    "@types/react": "^18.0.26",
+    "@typescript-eslint/eslint-plugin": "^5.48.1",
+    "@typescript-eslint/parser": "^5.48.1",
+    "eslint": "^8.31.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-config-sanity": "^6.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "lint-staged": "^13.1.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.2",
+    "prettier-plugin-packagejson": "^2.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-is": "^18.2.0",
+    "rimraf": "^4.0.4",
+    "sanity": "^3.2.3",
+    "styled-components": "^5.3.6",
+    "typescript": "^4.9.4"
+  },
+  "peerDependencies": {
+    "lodash": "^4.17.21",
+    "react": "^18",
+    "sanity": "^3.2.3"
+  },
+  "engines": {
+    "node": ">=14"
+  }
 }

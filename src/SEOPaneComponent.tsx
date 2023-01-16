@@ -1,32 +1,38 @@
 import React, {useState} from 'react'
-import PropTypes from 'prop-types'
 import {Text, Stack, Box, Card, Label, Flex, TabList, Tab, TabPanel, Spinner} from '@sanity/ui'
 import {useQuery} from 'react-query'
-import get from 'lodash/get'
+import {get} from 'lodash-es'
 
 import asyncCall from './lib/asyncCall'
 import performSeoReview from './lib/performSeoReview'
 import {renderRatingToColor} from './lib/renderRatingToColor'
 import {resultsLabels} from './lib/resultsLabels'
 
-import ErrorStack from './ErrorStack.js'
-import SerpPreview from './SerpPreview.js'
+import ErrorStack from './ErrorStack.jsx'
+import SERPPreview from './SERPPreview.js'
 import Feedback from './Feedback'
+import {SEOPaneOptions, SEOPaneProps} from './SEOPane'
 
-export default function SeoPaneComponent({document: sanityDocument, options}) {
+// @ts-ignore
+export default function SEOPaneComponent(props: SEOPaneProps<SEOPaneOptions>) {
+  const {document: sanityDocument, options} = props
   const [tab, setTab] = useState('')
 
   // The `revision` key updates when the document does, refreshing the query
   const {data, isLoading, error} = useQuery(
     [`seoReview`, sanityDocument._rev],
     async () => {
-      if (!sanityDocument._id) throw new Error('Document is not published')
-      else if (!options.url) badOption('url')
+      if (!sanityDocument._id) {
+        throw new Error('Document is not published')
+      } else if (!options.url) {
+        badOption('url')
+      }
 
+      // eslint-disable-next-line prefer-const
       let [keywords, synonyms, url] = await Promise.all([
-        asyncCall(options.keywords, sanityDocument),
-        asyncCall(options.synonyms, sanityDocument),
-        asyncCall(options.url, sanityDocument),
+        asyncCall(options.keywords, sanityDocument) as Promise<string>,
+        asyncCall(options.synonyms, sanityDocument) as Promise<string>,
+        asyncCall(options.url, sanityDocument) as Promise<string>,
       ])
 
       // Visits document path when strings because the asyncCall will have same value as options
@@ -52,29 +58,25 @@ export default function SeoPaneComponent({document: sanityDocument, options}) {
     )
   }
 
-  // Bail out on error. Unfortunately can't JSON.stringify(Error) to get the stack/message.
-  let errorMessage
+  // Bail out on error
   if (error instanceof Error) {
-    errorMessage = (
-      <>
-        {error.message} <ErrorStack stack={error.stack} />
-      </>
+    return (
+      <Feedback isError>
+        {error.message} {error.stack ? <ErrorStack stack={error.stack} /> : null}
+      </Feedback>
     )
-  } else if (!data) errorMessage = 'Empty response'
-  else if (data.error) errorMessage = <pre>{JSON.stringify(data.error)}</pre>
-
-  if (errorMessage) {
-    return <Feedback isError>Error: {errorMessage}</Feedback>
+  } else if (!data) {
+    return <Feedback isError>Empty response</Feedback>
   }
 
-  const {keywords, meta, permalink, resultsMapped, synonyms} = data
+  const {keywords, meta, permalink, resultsMapped, synonyms} = data as any
 
   return (
     <Box padding={4}>
       <Flex direction="column">
         {meta?.title && (
           <Card border padding={4} radius={2}>
-            <SerpPreview
+            <SERPPreview
               title={meta?.title}
               metaDescription={meta?.description ?? ``}
               url={permalink}
@@ -111,7 +113,7 @@ export default function SeoPaneComponent({document: sanityDocument, options}) {
               // eslint-disable-next-line react/jsx-no-bind
               onClick={() => setTab(key)}
               selected={tab === key || (!tab && !tabIndex)}
-              space={2}
+              // space={2}
             />
           ))}
         </TabList>
@@ -119,13 +121,13 @@ export default function SeoPaneComponent({document: sanityDocument, options}) {
         {Object.keys(resultsMapped).map((key, panelIndex) => (
           <TabPanel
             aria-labelledby={key}
-            hidden={(tab && tab !== key) || (!tab && panelIndex)}
+            hidden={(tab && tab !== key) || Boolean(!tab && panelIndex)}
             key={`${key}-panel`}
             id={`${key}-panel`}
             style={{margin: `0.5rem 0`, padding: `0.5rem 0`}}
           >
-            {resultsMapped[key].map((result, resultIndex) => (
-              <Flex key={`result-${resultIndex}`} alignItems="center" style={{margin: `0.5rem 0`}}>
+            {resultsMapped[key].map((result: any, resultIndex: number) => (
+              <Flex key={`result-${resultIndex}`} align="center" style={{margin: `0.5rem 0`}}>
                 <div
                   style={{
                     borderRadius: 10,
@@ -134,7 +136,6 @@ export default function SeoPaneComponent({document: sanityDocument, options}) {
                     backgroundColor: renderRatingToColor(result.rating),
                     marginRight: 10,
                     flexShrink: 0,
-                    transform: `translateY(6px)`,
                   }}
                 />
                 {result?.text && <div dangerouslySetInnerHTML={{__html: result.text}} />}
@@ -147,20 +148,6 @@ export default function SeoPaneComponent({document: sanityDocument, options}) {
   )
 }
 
-SeoPaneComponent.propTypes = {
-  document: PropTypes.shape({
-    displayed: PropTypes.shape({
-      _id: PropTypes.string,
-      _rev: PropTypes.string,
-    }),
-  }).isRequired,
-  options: PropTypes.shape({
-    keywords: PropTypes.oneOfType([PropTypes.string, PropTypes.func]).isRequired,
-    synonyms: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
-    url: PropTypes.func.isRequired,
-  }).isRequired,
-}
-
-function badOption(key) {
+function badOption(key: string) {
   throw new Error(`seo-pane options: ${key} is invalid or missing`)
 }

@@ -1,4 +1,11 @@
-export const resultsLabels = {
+type Labels = {
+  [key: string]: {
+    single: string
+    plural: string
+  }
+}
+
+export const resultsLabels: Labels = {
   errorsResults: {
     single: `Error`,
     plural: `Errors`,
@@ -19,4 +26,4 @@ export const resultsLabels = {
     single: `Consideration`,
     plural: `Considerations`,
   },
-};
+}
