@@ -12,7 +12,7 @@ npm install sanity-plugin-seo-pane
 
 Run Yoast's SEO review tools using Sanity data, inside a List View Pane. When setup correctly, it will fetch your rendered front-end, as your Sanity data changes, to give instant SEO feedback on your document.
 
-![SEO Pane](https://user-images.githubusercontent.com/9684022/121206036-0a527300-c870-11eb-8192-be5e523236ab.gif)
+![seo-pane-sanity-studio-v3](https://user-images.githubusercontent.com/9684022/212726107-7e1199b7-7b76-40e6-be72-2ae30ed34eb9.png)
 
 ## Installation
 
