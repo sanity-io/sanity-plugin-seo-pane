@@ -20,7 +20,7 @@ Run Yoast's SEO review tools using Sanity data, inside a List View Pane. When se
 sanity install seo-pane
 ```
 
-This plugin requires a very specific setup in order to get the full benefit. It is designed to be used as a [Component inside of a View](https://www.sanity.io/docs/structure-builder-reference#c0c8284844b7).
+This plugin requires a very specific setup to get the full benefit. It is designed to be used as a [Component inside of a View](https://www.sanity.io/docs/structure-builder-reference#c0c8284844b7).
 
 ```js
 // ./src/deskStructure.js
