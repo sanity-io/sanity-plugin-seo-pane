@@ -1,33 +1,31 @@
 /**
- * Lightly edited version of:
+ * Edited version of:
  * https://github.com/Yoast/wordpress-seo/blob/0742e9b6ba4c0d6ae9d65223267a106b92a6a4a1/js/src/components/contentAnalysis/mapResults.js
  */
+
+// @ts-ignore
 import {helpers} from 'yoastseo'
 import {colors} from './colors'
 
 const {scoreToRating} = helpers
 
-/**
- * Mapped result definition.
- * @typedef {Object} MappedResult
- * @property {string} rating
- * @property {bool} hasMarks
- * @property {string} text
- * @property {string} id
- * @property {func} marker
- * @property {number} score
- * @property {string} markerId
- */
+export type MappedResult = {
+  rating: string
+  hasMarks: boolean
+  text: string
+  id: string
+  marker: () => void
+  score: number
+  markerId: string
+}
 
-/**
- * Mapped results definition.
- * @typedef {Object} MappedResults
- * @property {Array<MappedResult>} errorsResults
- * @property {Array<MappedResult>} problemsResults
- * @property {Array<MappedResult>} improvementsResults
- * @property {Array<MappedResult>} goodResults
- * @property {Array<MappedResult>} considerationsResults
- */
+export type MappedResults = {
+  errorsResults: MappedResult[]
+  problemsResults: MappedResult[]
+  improvementsResults: MappedResult[]
+  goodResults: MappedResult[]
+  considerationsResults: MappedResult[]
+}
 
 /**
  * Maps a single results to a result that can be interpreted by yoast-component's ContentAnalysis.
@@ -37,7 +35,7 @@ const {scoreToRating} = helpers
  *
  * @returns {MappedResult} The mapped result.
  */
-function mapResult(result, key = '') {
+function mapResult(result: any, key = '') {
   const id = result.getIdentifier()
   const mappedResult = {
     score: result.score,
@@ -59,13 +57,8 @@ function mapResult(result, key = '') {
 
 /**
  * Adds a mapped results to the appropriate array in the mapped results object.
- *
- * @param {MappedResult} mappedResult The mapped result.
- * @param {MappedResults} mappedResults The mapped results.
- *
- * @returns {MappedResults} The mapped results object with the added result.
  */
-function processResult(mappedResult, mappedResults) {
+function processResult(mappedResult: MappedResult, mappedResults: MappedResults) {
   switch (mappedResult.rating) {
     case 'error':
       mappedResults.errorsResults.push(mappedResult)
@@ -95,7 +88,13 @@ function processResult(mappedResult, mappedResults) {
  *
  * @returns {Object} The icon and color for the score.
  */
-export function getIconForScore(score) {
+type Score = 'loading' | 'good' | 'ok' | 'bad' | undefined
+type ScoreIcon = {
+  icon: string
+  color: string
+}
+
+export function getIconForScore(score: Score): ScoreIcon {
   let icon = {icon: 'seo-score-none', color: colors.$color_grey_disabled}
 
   switch (score) {
@@ -123,13 +122,9 @@ export function getIconForScore(score) {
  *
  * Takes in the YoastSEO.js results and maps them to the appropriate objects, so they can be used by the
  * ContentAnalysis component from @yoast/analysis-report.
- *
- * @param {object} results    Results provided by YoastSEO.js.
- * @param {string} keywordKey The key of the keyword that these results represent.
- *
- * @returns {MappedResults} The mapped results.
  */
-export default function mapResults(results, keywordKey = '') {
+
+export default function mapResults(results: MappedResult[], keywordKey = ''): MappedResults {
   let mappedResults = {
     errorsResults: [],
     problemsResults: [],
@@ -146,6 +141,7 @@ export default function mapResults(results, keywordKey = '') {
       continue
     }
     const mappedResult = mapResult(result, keywordKey)
+    // @ts-ignore
     mappedResults = processResult(mappedResult, mappedResults)
   }
   return mappedResults
