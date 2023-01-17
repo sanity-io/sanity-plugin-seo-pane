@@ -7,6 +7,34 @@ All notable changes to this project will be documented in this file. See
 
 ## 1.0.0-v2-plugin.1 (2023-01-17)
 
+### ⚠ BREAKING CHANGES
+
+- Plugin has been updated for Studio v3
+
+### Features
+
+- update readme to prompt new major ([03ef34d](https://github.com/sanity-io/sanity-plugin-seo-pane/commit/03ef34d37a1ea848f1e24d22acbcb2fc58d2054a))
+
+### Bug Fixes
+
+- update readme to prompt release ([6babcc1](https://github.com/sanity-io/sanity-plugin-seo-pane/commit/6babcc151b64e5e4f25c83a04516fd5dd66b3ebd))
+
+## 1.0.0-v2-plugin.1 (2023-01-17)
+
+### ⚠ BREAKING CHANGES
+
+- Plugin has been updated for Studio v3
+
+### Features
+
+- update readme to prompt new major ([03ef34d](https://github.com/sanity-io/sanity-plugin-seo-pane/commit/03ef34d37a1ea848f1e24d22acbcb2fc58d2054a))
+
+### Bug Fixes
+
+- update readme to prompt release ([6babcc1](https://github.com/sanity-io/sanity-plugin-seo-pane/commit/6babcc151b64e5e4f25c83a04516fd5dd66b3ebd))
+
+## 1.0.0-v2-plugin.1 (2023-01-17)
+
 ### Bug Fixes
 
 - update readme to prompt release ([6babcc1](https://github.com/sanity-io/sanity-plugin-seo-pane/commit/6babcc151b64e5e4f25c83a04516fd5dd66b3ebd))
