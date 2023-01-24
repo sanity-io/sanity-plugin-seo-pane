@@ -1,7 +1,4 @@
 {
   "extends": "@sanity/semantic-release-preset",
-  "branches": [
-    "main",
-    {"name": "v2-plugin", "prerelease": true, "channel": "v2-plugin", "range": "2.x.x"}
-  ]
+  "branches": ["main", {"name": "beta", "prerelease": true, "channel": "beta", "range": "2.x.x"}]
 }
