@@ -1,4 +1,4 @@
-> This is a **Sanity Studio v3** plugin.
+> This is a beta **Sanity Studio v3** plugin.
 
 ## Installation
 
