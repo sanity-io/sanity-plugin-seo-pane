@@ -132,6 +132,33 @@ filterDataToSingleItem(data, preview) {
 }
 ```
 
+### Compatibility with Sanity Studio v3 running on Vite
+
+By default, a new v3 Sanity Studio will use Vite as its build tool. The underlying `yoastseo` package in this plugin requires node.js built-in modules that are not supported by Vite. To get around this, you will need to modify the Studio's Vite config to look somewhat like this
+
+```ts
+// ./sanity.cli.ts
+
+import {defineCliConfig} from 'sanity/cli'
+// yarn add -D vite-plugin-node-polyfills
+import {nodePolyfills} from 'vite-plugin-node-polyfills'
+
+export default defineCliConfig({
+  // ... your project's `api` config
+  vite: (prev) => ({
+    ...prev,
+    plugins: [
+      ...prev.plugins,
+      nodePolyfills({ util: true }),
+    ],
+    define: {
+      ...prev.define,
+      'process.env': {},
+    },
+  }),
+})
+```
+
 ## License
 
 [MIT](LICENSE) © Sanity.io
