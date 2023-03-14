@@ -5,6 +5,12 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.0-beta.2](https://github.com/sanity-io/sanity-plugin-seo-pane/compare/v2.0.0-beta.1...v2.0.0-beta.2) (2023-03-14)
+
+### Features
+
+- update yoast package ([63b817c](https://github.com/sanity-io/sanity-plugin-seo-pane/commit/63b817cea9fd06223308ffbebb2a51cadd58e70f))
+
 ## [2.0.0-beta.1](https://github.com/sanity-io/sanity-plugin-seo-pane/compare/v1.0.0...v2.0.0-beta.1) (2023-01-24)
 
 ### ⚠ BREAKING CHANGES
