@@ -163,6 +163,22 @@ export default defineCliConfig({
 })
 ```
 
+### Compatibility with Sanity Studio v3 running in Next.js
+
+With a Studio embedded in a Next.js application, you may need to update your `next.config.mjs` file to set `esmExternals: loose`:
+
+```js
+// ./next.config.mjs
+
+/** @type {import('next').NextConfig} */
+const config = {
+  experimental: {
+    // ...all other experimental features
+    esmExternals: 'loose'
+  },
+  // ...all other config
+```
+
 ## License
 
 [MIT](LICENSE) © Sanity.io
