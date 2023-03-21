@@ -1,4 +1,4 @@
-> This is a **Sanity Studio v3** plugin.
+> This is a beta **Sanity Studio v3** plugin.
 
 ## Installation
 
@@ -6,9 +6,11 @@
 npm install sanity-plugin-seo-pane
 ```
 
-## Usage
+## Note
 
-# sanity-plugin-seo-pane
+The main `yoastseo` package used by this plugin is quite old and has not been published to NPM in a long time, which can lead to some compatibility issues. If you'd like to gently nudge the wonderful Yoast team to update it, [please kindly do so here](https://github.com/Yoast/wordpress-seo/issues/17899)
+
+## Usage
 
 Run Yoast's SEO review tools using Sanity data, inside a List View Pane. When set up correctly, it will fetch your rendered front-end, as your Sanity data changes, to give instant SEO feedback on your document.
 
@@ -20,7 +22,7 @@ Run Yoast's SEO review tools using Sanity data, inside a List View Pane. When se
 sanity install seo-pane
 ```
 
-This plugin requires a very specific setup in order to get the full benefit. It is designed to be used as a [Component inside of a View](https://www.sanity.io/docs/structure-builder-reference#c0c8284844b7).
+This plugin requires a very specific setup to get the full benefit. It is designed to be used as a [Component inside of a View](https://www.sanity.io/docs/structure-builder-reference#c0c8284844b7).
 
 ```js
 // ./src/deskStructure.js
@@ -83,9 +85,9 @@ res.setHeader('Access-Control-Allow-Credentials', true)
 
 ### Returning the page HTML as a string
 
-The Component will append a `fetch=true` parameter to the URL. You can use this to make the `/api` route to actually perform its own fetch for the markup of the page – not redirect to it – and return the expected object shape.
+The Component will append a `fetch=true` parameter to the URL. You can use this to make the `/api` route perform its fetch for the markup of the page – not redirect to it – and return the expected object shape.
 
-Making your Preview route actually `fetch` the markup and just return a string will avoid problems with having to pass cookies along from Sanity Studio, to the preview route, to the front end. You will note in the below example though we are deliberately copying the Cookies from the incoming request to the `/api` route and passing them along to the front-end.
+Making your Preview route actually `fetch` the markup and just return a string will avoid problems with having to pass cookies along from Sanity Studio, to the preview route, to the front end. You will note in the below example that we are deliberately copying the Cookies from the incoming request to the `/api` route and passing them along to the front end.
 
 ```js
 // ./pages/api/preview.js
@@ -112,7 +114,7 @@ if (req?.query?.fetch === 'true') {
 
 ### A note on server-side rendering of draft content
 
-As a final, Next.js specific note. Because this is going to fetch server-side, you'll need to make sure your `getStaticProps()` is  going to return draft content server-side.
+If your fetch happens server-side, you'll need to make sure your query with Sanity Client is going to return draft content server-side when preview mode is enabled.
 
 (Client-side, Sanity's usePreviewSubscription hook will take Published content and return a Draft version, but server-side we need to do it ourselves)
 
@@ -134,7 +136,48 @@ filterDataToSingleItem(data, preview) {
 }
 ```
 
-It's that easy!
+### Compatibility with Sanity Studio v3 running on Vite
+
+By default, a new v3 Sanity Studio will use Vite as its build tool. The underlying `yoastseo` package in this plugin requires node.js built-in modules that are not supported by Vite. To get around this, you will need to modify the Studio's Vite config to look somewhat like this
+
+```ts
+// ./sanity.cli.ts
+
+import {defineCliConfig} from 'sanity/cli'
+// yarn add -D vite-plugin-node-polyfills
+import {nodePolyfills} from 'vite-plugin-node-polyfills'
+
+export default defineCliConfig({
+  // ... your project's `api` config
+  vite: (prev) => ({
+    ...prev,
+    plugins: [
+      ...prev.plugins,
+      nodePolyfills({ util: true }),
+    ],
+    define: {
+      ...prev.define,
+      'process.env': {},
+    },
+  }),
+})
+```
+
+### Compatibility with Sanity Studio v3 running in Next.js
+
+With a Studio embedded in a Next.js application, you may need to update your `next.config.mjs` file to set `esmExternals: loose`:
+
+```js
+// ./next.config.mjs
+
+/** @type {import('next').NextConfig} */
+const config = {
+  experimental: {
+    // ...all other experimental features
+    esmExternals: 'loose'
+  },
+  // ...all other config
+```
 
 ## License
 
