@@ -1,14 +1,10 @@
-> This is a beta **Sanity Studio v3** plugin.
+> This is a **Sanity Studio v3** plugin.
 
 ## Installation
 
 ```sh
 npm install sanity-plugin-seo-pane
 ```
-
-## Note
-
-The main `yoastseo` package used by this plugin is quite old and has not been published to NPM in a long time, which can lead to some compatibility issues. If you'd like to gently nudge the wonderful Yoast team to update it, [please kindly do so here](https://github.com/Yoast/wordpress-seo/issues/17899)
 
 ## Usage
 
@@ -135,6 +131,10 @@ filterDataToSingleItem(data, preview) {
     : data.pop()
 }
 ```
+
+## Note
+
+The main `yoastseo` package used by this plugin has only recently been updated on NPM and may lead to some compatibility issues. If you have trouble with installation try the following guides below. 
 
 ### Compatibility with Sanity Studio v3 running on Vite
 
