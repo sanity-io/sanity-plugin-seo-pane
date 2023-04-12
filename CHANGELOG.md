@@ -5,6 +5,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/sanity-io/sanity-plugin-seo-pane/compare/v2.0.0...v2.0.1) (2023-04-12)
+
+### Bug Fixes
+
+- remove empty test results ([c7d7871](https://github.com/sanity-io/sanity-plugin-seo-pane/commit/c7d78712f69083f336d611fe543fab9b08c9faa5))
+- update readme ([7761245](https://github.com/sanity-io/sanity-plugin-seo-pane/commit/7761245d3bba301183a471d21a091edff6ff2f40))
+
 ## [2.0.0](https://github.com/sanity-io/sanity-plugin-seo-pane/compare/v1.0.0...v2.0.0) (2023-03-21)
 
 ### ⚠ BREAKING CHANGES
