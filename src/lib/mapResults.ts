@@ -36,6 +36,10 @@ export type MappedResults = {
  * @returns {MappedResult} The mapped result.
  */
 function mapResult(result: any, key = '') {
+  // Some results arrive with only {text: 'Test Skipped'}
+  if (!result.getIdentifier) {
+    return null
+  }
   const id = result.getIdentifier()
   const mappedResult = {
     score: result.score,
@@ -141,8 +145,10 @@ export default function mapResults(results: MappedResult[], keywordKey = ''): Ma
       continue
     }
     const mappedResult = mapResult(result, keywordKey)
-    // @ts-ignore
-    mappedResults = processResult(mappedResult, mappedResults)
+    if (mappedResult) {
+      // @ts-ignore
+      mappedResults = processResult(mappedResult, mappedResults)
+    }
   }
   return mappedResults
 }

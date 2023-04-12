@@ -1,11 +1,5 @@
 > This is a **Sanity Studio v3** plugin.
 
-## Installation
-
-```sh
-npm install sanity-plugin-seo-pane
-```
-
 ## Usage
 
 Run Yoast's SEO review tools using Sanity data, inside a List View Pane. When set up correctly, it will fetch your rendered front-end, as your Sanity data changes, to give instant SEO feedback on your document.
@@ -22,7 +16,8 @@ This plugin requires a very specific setup to get the full benefit. It is design
 
 ```js
 // ./src/deskStructure.js
-import { SEOPane } from 'sanity-plugin-seo-pane'
+
+import {SEOPane} from 'sanity-plugin-seo-pane'
 
 // ...all other list items
 
@@ -48,13 +43,7 @@ The `.options()` configuration works as follows:
 - `synonyms` (`string|function(Document):(string|Promise<string>)`, optional) As above.
 - `url` (`function(Document):(string|Promise<string>)`, required) A function that takes in the current document, and resolves to a string with a URL to a preview-enabled front-end. You likely have a function like this already for Live Preview.
 
-### Defining the content area
-
-By default, the plugin will examine all content it finds inside a tag with this attribute: `data-content="main"`.
-
-If this cannot be found it will fall back to content `<main>inside your main tag</main>`.
-
-### Defining the canonical URL
+### Required: Define a canonical URL on your frontend
 
 The Search Engine Preview will rely on [retrieving a Canonical tag](https://developers.google.com/search/docs/advanced/crawling/consolidate-duplicate-urls), like the one below, make sure your front end includes one.
 
@@ -62,79 +51,112 @@ The Search Engine Preview will rely on [retrieving a Canonical tag](https://deve
 <link rel="canonical" href="https://example.com/dresses/green-dresses" />
 ```
 
-### Fetching the front-end
+You can clear the error with a blank canonical tag like this, but it will affect the reporting:
+
+```html
+<link rel="canonical" href="/" />
+```
+
+### Required: Define the content area
+
+By default, the plugin will examine all content it finds inside a tag with this attribute: `data-content="main"`.
+
+If this cannot be found it will fall back to content `<main>inside your main tag</main>`.
+
+## Fetching the front-end
 
 Because the plugin uses Fetch, you're potentially going to run into CORS issues retrieving the front end from the Studio on another URL. Therefore, you may need to do some setup work on your preview URL. If you're using Next.js, adding this to the top of your preview `/api` route will _make fetch happen_.
 
 Some snippets are below, [but here is a full Sanity Preview Next.js API Route for reference](https://gist.github.com/SimeonGriggs/6649dc7f4b0fec974c05d29cae969cbc)
 
-```js
-// ./pages/api/preview.js
-const corsOrigin =
-  process.env.NODE_ENV === 'development'
-    ? `http://localhost:3333`
-    : `https://your-studio.sanity.studio`
+### Handling CORS if your Studio and frontend are on different URLs
 
-res.setHeader('Access-Control-Allow-Origin', corsOrigin)
-res.setHeader('Access-Control-Allow-Credentials', true)
+You may need to add some CORS handling to your frontend's preview route if your Studio and front end are on different URLs. This is because the SEO plugin will try to fetch the front end from the Studio, and the browser will block this request.
+
+```ts
+// ./pages/api/preview.js
+
+// Is the SEO plugin trying to fetch and return HTML?
+// AND is the Studio on a different URL to the website?
+if (req.query.fetch) {
+  // Allow requests from the Studio's URL
+  const corsOrigin = host.includes('localhost') ? STUDIO_URL_DEV : STUDIO_URL_PROD
+  res.setHeader('Access-Control-Allow-Origin', corsOrigin)
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+}
 ```
 
 ### Returning the page HTML as a string
 
-The Component will append a `fetch=true` parameter to the URL. You can use this to make the `/api` route perform its fetch for the markup of the page – not redirect to it – and return the expected object shape.
+The Component will append a `fetch=true` parameter to the URL. You can use this to make the `/api` route perform its fetch for the markup of the page – not redirect to it – and return the page's HTML as a string.
 
 Making your Preview route actually `fetch` the markup and just return a string will avoid problems with having to pass cookies along from Sanity Studio, to the preview route, to the front end. You will note in the below example that we are deliberately copying the Cookies from the incoming request to the `/api` route and passing them along to the front end.
 
-```js
+```ts
 // ./pages/api/preview.js
 
 // ... CORS enabled stuff, res.setPreviewData, etc
 
-// Fetch the preview-page's HTML and return in an object
-if (req?.query?.fetch === 'true') {
-  const proto = process.env.NODE_ENV === 'development' ? `http://` : `https://`
-  const host = req.headers.host
-  const pathname = req?.query?.slug ?? `/`
-  const absoluteUrl = new URL(`${proto}${host}${pathname}`).toString()
+// Initialise preview mode
+res.setPreviewData({})
 
-  const previewHtml = await fetch(absoluteUrl, {
-    credentials: `include`,
-    headers: {Cookie: req.headers.cookie},
-  })
+// Return just the HTML if the SEO plugin is requesting it
+if (req.query.fetch) {
+  // Create preview URL
+  const baseOrigin = host.includes('localhost') ? WEBSITE_URL_DEV : WEBSITE_URL_PROD
+  const absoluteUrl = new URL(slug, baseOrigin).toString()
+  // Create preview headers from the setPreviewData above
+  const previewHeader = res.getHeader('Set-Cookie')
+  const previewHeaderString =
+    typeof previewHeader === 'string' || typeof previewHeader === 'number'
+      ? previewHeader.toString()
+      : previewHeader?.join('; ')
+  const headers = new Headers()
+  headers.append('credentials', 'include')
+  headers.append('Cookie', previewHeaderString ?? '')
+  const previewHtml = await fetch(absoluteUrl, {headers})
     .then((previewRes) => previewRes.text())
     .catch((err) => console.error(err))
-
   return res.send(previewHtml)
 }
 ```
 
-### A note on server-side rendering of draft content
+### Rendering preview content server-side
 
-If your fetch happens server-side, you'll need to make sure your query with Sanity Client is going to return draft content server-side when preview mode is enabled.
+The fetch above will return HTML as if JavaScript was not enabled. Client-side, [next-sanity](https://github.com/sanity-io/next-sanity) preview mode will query Published content and return a Draft version if it exists – but server-side you might need to do it yourself.
 
-(Client-side, Sanity's usePreviewSubscription hook will take Published content and return a Draft version, but server-side we need to do it ourselves)
+Using the [App Router with Next.js 13](https://beta.nextjs.org/docs/getting-started#introducing-the-app-router) and/or React Server Components may solve this for you. Otherwise, you might need to change how you query content.
 
-It's easy to accidentally configure Next.js and Sanity to query for only published data, and then switch over to draft content client-side.
+A typical single-document query might look like this, fetching a single document by its slug:
 
-For example, your GROQ query might look like `*[slug.current == $slug][0]` which will only return one document, and not necessarily the draft.
+```json
+// Query for the first document with this slug (draft OR published)
+*[slug.current == $slug][0]
+```
 
-To solve this with the server-side query, I'll make sure we query for **all documents** that match the slug (as in, draft _and_ published) then use this function to just filter down to the one I want:
+To solve this with the server-side query, you may query for **all documents** that match the slug (as in, draft _and_ published) then use this function to just filter down to the one I want. Note that this will only solve for top-level documents returned by a query, references will still resolve published versions as usual.
+
+```json
+// Query for all documents with this slug
+*[slug.current == $slug]
+```
 
 ```js
+// Then post-process the results
 filterDataToSingleItem(data, preview) {
   if (!Array.isArray(data)) {
     return data
   }
 
   return data.length > 1 && preview
-    ? data.filter((item) => item._id.startsWith(`drafts.`)).pop()
-    : data.pop()
+    ? [...data].filter((item) => item._id.startsWith(`drafts.`)).pop()
+    : [...data].pop()
 }
 ```
 
-## Note
+## Troubleshooting
 
-The main `yoastseo` package used by this plugin has only recently been updated on NPM and may lead to some compatibility issues. If you have trouble with installation try the following guides below. 
+The main `yoastseo` package used by this plugin has only recently been updated on NPM and may lead to some compatibility issues. If you have trouble with installation try the following guides below.
 
 ### Compatibility with Sanity Studio v3 running on Vite
 
@@ -151,10 +173,7 @@ export default defineCliConfig({
   // ... your project's `api` config
   vite: (prev) => ({
     ...prev,
-    plugins: [
-      ...prev.plugins,
-      nodePolyfills({ util: true }),
-    ],
+    plugins: [...prev.plugins, nodePolyfills({util: true})],
     define: {
       ...prev.define,
       'process.env': {},
@@ -182,7 +201,6 @@ const config = {
 ## License
 
 [MIT](LICENSE) © Sanity.io
-
 
 ## Develop & test
 

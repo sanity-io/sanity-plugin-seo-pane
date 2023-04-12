@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import {Text, Stack, Box, Card, Label, Flex, TabList, Tab, TabPanel, Spinner} from '@sanity/ui'
 import {useQuery} from 'react-query'
 import {get} from 'lodash-es'
@@ -113,7 +113,6 @@ export default function SEOPaneComponent(props: SEOPaneProps<SEOPaneOptions>) {
               // eslint-disable-next-line react/jsx-no-bind
               onClick={() => setTab(key)}
               selected={tab === key || (!tab && !tabIndex)}
-              // space={2}
             />
           ))}
         </TabList>
