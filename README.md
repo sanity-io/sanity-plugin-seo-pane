@@ -1,4 +1,10 @@
-> This is a **Sanity Studio v3** plugin.
+## This plugin is now deprecated
+
+The Sanity SEO Pane plugin can no longer be recommended for use and is now deprecated. This is due to circumstances outside of our control as the plugin relies on an [outdated dependency produced by a third party](https://github.com/Yoast/wordpress-seo/issues/17899). We apologize for the inconvenience.
+
+This repository and the following documentation will be kept available for reference purposes only.
+
+---
 
 ## Usage
 
